@@ -1,50 +1,57 @@
-class SearchModel {
+class ProfileModel {
   final String id;
   final String username;
   final String fullName;
+  final String bio;
   final String profileImage;
-  final String followers;
+  final int followersCount;
   final bool isVerified;
-  final bool isFollowing;
+  final String threadsNetLink;
 
-  SearchModel({
+  ProfileModel({
     required this.id,
     required this.username,
     required this.fullName,
+    required this.bio,
     required this.profileImage,
-    required this.followers,
+    required this.followersCount,
     this.isVerified = false,
-    this.isFollowing = false,
+    this.threadsNetLink = "threads.net",
   });
 
   // Returns an empty instance
-  SearchModel.empty()
+  ProfileModel.empty()
       : id = "",
         username = "",
         fullName = "",
+        bio = "",
         profileImage = "",
-        followers = "",
+        followersCount = 0,
         isVerified = false,
-        isFollowing = false;
+        threadsNetLink = "threads.net";
 
   // Creates an instance from a JSON map
-  SearchModel.fromJson({required Map<String, dynamic> json})
+  ProfileModel.fromJson({required Map<String, dynamic> json})
       : id = json["id"] ?? "",
         username = json["username"] ?? "",
         fullName = json["fullName"] ?? "",
+        bio = json["bio"] ?? "",
         profileImage = json["profileImage"] ?? "",
-        followers = json["followers"] ?? "",
+        followersCount = json["followersCount"] ?? 0,
         isVerified = json["isVerified"] ?? false,
-        isFollowing = json["isFollowing"] ?? false;
+        threadsNetLink = json["threadsNetLink"] ?? "threads.net";
 
   // Converts the instance to a JSON map
   Map<String, dynamic> toJson() => {
         "id": id,
         "username": username,
         "fullName": fullName,
+        "bio": bio,
         "profileImage": profileImage,
-        "followers": followers,
+        "followersCount": followersCount,
         "isVerified": isVerified,
-        "isFollowing": isFollowing,
+        "threadsNetLink": threadsNetLink,
       };
 }
+
+

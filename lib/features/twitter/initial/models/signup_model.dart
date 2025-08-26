@@ -35,7 +35,3 @@ class SignupModel {
         'trackAcrossWeb': trackAcrossWeb,
       };
 }
-
-
-
-

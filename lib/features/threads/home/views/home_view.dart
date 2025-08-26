@@ -3,13 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_study/constants/sizes.dart';
 import 'package:hugeicons/hugeicons.dart';
 
+import '../../activity/views/activity_view.dart';
+import '../../profile/views/profile_view.dart';
 import '../../search/views/search_view.dart';
+import '../../settings/views/settings_view.dart';
+import '../../settings/views/privacy_view.dart';
 import '../view_model/home_view_model.dart';
+import '../widgets/create_post_bottom_sheet.dart';
 import '../widgets/home_content_widget.dart';
 import '../widgets/nav_item_widget.dart';
 import 'new_post_view.dart';
-import 'notifications_view.dart';
-import 'profile_view.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
@@ -20,6 +23,7 @@ class HomeView extends ConsumerStatefulWidget {
 
 class _HomeViewState extends ConsumerState<HomeView> {
   int _currentIndex = 0;
+  String? _profileSubView; // 'settings' or 'privacy'
 
   @override
   void initState() {
@@ -33,7 +37,25 @@ class _HomeViewState extends ConsumerState<HomeView> {
   void _onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
+      // Reset profile subview when switching tabs
+      if (index != 4) {
+        _profileSubView = null;
+      }
     });
+  }
+
+  void _showCreatePostSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => CreatePostBottomSheet(
+        onPostCreated: () {
+          // TODO: Refresh posts after creation
+          ref.read(homeViewModelProvider.notifier).loadPosts();
+        },
+      ),
+    );
   }
 
   Widget _getCurrentView() {
@@ -45,9 +67,26 @@ class _HomeViewState extends ConsumerState<HomeView> {
       case 2:
         return const NewPostView();
       case 3:
-        return const NotificationsView();
+        return const ActivityView();
       case 4:
-        return const ProfileView();
+        if (_profileSubView == 'settings') {
+          return SettingsView(
+            onBackToProfile: () => setState(() => _profileSubView = null),
+            onNavigateToPrivacy: () =>
+                setState(() => _profileSubView = 'privacy'),
+          );
+        } else if (_profileSubView == 'privacy') {
+          return PrivacyView(
+            onBackToProfile: () => setState(() => _profileSubView = null),
+          );
+        } else {
+          return ProfileView(
+            onNavigateToSettings: () =>
+                setState(() => _profileSubView = 'settings'),
+            onNavigateToPrivacy: () =>
+                setState(() => _profileSubView = 'privacy'),
+          );
+        }
       default:
         return const HomeContentWidget();
     }
@@ -131,7 +170,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 NavItemWidget(
                   icon: Icons.add_box_outlined,
                   isSelected: _currentIndex == 2,
-                  onTap: () => _onTabTapped(2),
+                  onTap: () => _showCreatePostSheet(context),
                 ),
                 NavItemWidget(
                   icon: Icons.favorite_outline,

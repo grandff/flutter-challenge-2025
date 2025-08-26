@@ -4,6 +4,8 @@ import 'package:flutter_study/constants/gaps.dart';
 import 'package:flutter_study/constants/sizes.dart';
 import '../models/post_model.dart';
 import '../view_model/home_view_model.dart';
+import 'post_options_bottom_sheet.dart';
+import 'report_bottom_sheet.dart';
 
 class PostWidget extends ConsumerWidget {
   final PostModel post;
@@ -152,10 +154,13 @@ class PostWidget extends ConsumerWidget {
                         ),
                       ),
                       Gaps.h8,
-                      Icon(
-                        Icons.more_horiz,
-                        color: Colors.grey[600],
-                        size: Sizes.size20,
+                      GestureDetector(
+                        onTap: () => _showPostOptions(context),
+                        child: Icon(
+                          Icons.more_horiz,
+                          color: Colors.grey[600],
+                          size: Sizes.size20,
+                        ),
                       ),
                     ],
                   ),
@@ -281,6 +286,49 @@ class PostWidget extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showPostOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => PostOptionsBottomSheet(
+        postId: post.id,
+        username: post.username,
+        onUnfollow: () {
+          Navigator.of(context).pop();
+          // TODO: Implement unfollow logic
+          print('Unfollow ${post.username}');
+        },
+        onMute: () {
+          Navigator.of(context).pop();
+          // TODO: Implement mute logic
+          print('Mute ${post.username}');
+        },
+        onHide: () {
+          Navigator.of(context).pop();
+          // TODO: Implement hide logic
+          print('Hide post ${post.id}');
+        },
+        onReport: () {
+          Navigator.of(context).pop();
+          _showReportSheet(context);
+        },
+      ),
+    );
+  }
+
+  void _showReportSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ReportBottomSheet(
+        postId: post.id,
+        onBack: () => Navigator.of(context).pop(),
       ),
     );
   }

@@ -21,7 +21,3 @@ class InitialViewModel extends StateNotifier<InitialModel> {
     await repo.signInWithApple();
   }
 }
-
-
-
-

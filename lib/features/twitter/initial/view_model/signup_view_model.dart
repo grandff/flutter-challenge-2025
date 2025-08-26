@@ -35,7 +35,3 @@ class SignupViewModel extends StateNotifier<SignupModel> {
     );
   }
 }
-
-
-
-

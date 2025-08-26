@@ -1,69 +1,109 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../models/search_model.dart';
 import '../repos/search_repo.dart';
 
-final searchRepositoryProvider = Provider<SearchRepository>((ref) {
-  return SearchRepositoryImpl();
+final searchRepoProvider = Provider<SearchRepo>((ref) {
+  return SearchRepo();
 });
 
 final searchViewModelProvider =
     StateNotifierProvider<SearchViewModel, SearchState>((ref) {
-  final repository = ref.read(searchRepositoryProvider);
-  return SearchViewModel(repository);
+  final repo = ref.read(searchRepoProvider);
+  return SearchViewModel(repo);
 });
 
 class SearchState {
-  final String query;
-  final List<String> results;
+  final List<SearchModel> users;
   final bool isLoading;
   final String? error;
+  final String query;
 
   SearchState({
-    this.query = "",
-    this.results = const [],
+    this.users = const [],
     this.isLoading = false,
     this.error,
+    this.query = '',
   });
 
   SearchState copyWith({
-    String? query,
-    List<String>? results,
+    List<SearchModel>? users,
     bool? isLoading,
     String? error,
+    String? query,
   }) {
     return SearchState(
-      query: query ?? this.query,
-      results: results ?? this.results,
+      users: users ?? this.users,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
+      query: query ?? this.query,
     );
   }
 }
 
 class SearchViewModel extends StateNotifier<SearchState> {
-  final SearchRepository _repository;
+  final SearchRepo _repo;
 
-  SearchViewModel(this._repository) : super(SearchState());
+  SearchViewModel(this._repo) : super(SearchState());
 
   Future<void> search(String query) async {
     if (query.isEmpty) {
-      state = state.copyWith(query: "", results: []);
+      state = state.copyWith(query: '', users: []);
       return;
     }
 
-    state = state.copyWith(query: query, isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, error: null, query: query);
 
     try {
-      final results = await _repository.searchPosts(query);
-      state = state.copyWith(results: results, isLoading: false);
+      final users = await _repo.searchUsers(query);
+      state = state.copyWith(
+        users: users,
+        isLoading: false,
+      );
     } catch (e) {
       state = state.copyWith(
-        isLoading: false,
         error: e.toString(),
+        isLoading: false,
+      );
+    }
+  }
+
+  Future<void> loadTrendingUsers() async {
+    state = state.copyWith(isLoading: true, error: null);
+
+    try {
+      final users = await _repo.getTrendingUsers();
+      state = state.copyWith(
+        users: users,
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        error: e.toString(),
+        isLoading: false,
       );
     }
   }
 
   void clearSearch() {
-    state = state.copyWith(query: "", results: []);
+    state = state.copyWith(query: '', users: []);
+  }
+
+  void toggleFollow(String userId) {
+    final updatedUsers = state.users.map((user) {
+      if (user.id == userId) {
+        return SearchModel(
+          id: user.id,
+          username: user.username,
+          fullName: user.fullName,
+          profileImage: user.profileImage,
+          followers: user.followers,
+          isVerified: user.isVerified,
+          isFollowing: !user.isFollowing,
+        );
+      }
+      return user;
+    }).toList();
+
+    state = state.copyWith(users: updatedUsers);
   }
 }

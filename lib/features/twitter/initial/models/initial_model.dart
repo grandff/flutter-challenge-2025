@@ -20,7 +20,3 @@ class InitialModel {
         'name': name,
       };
 }
-
-
-
-

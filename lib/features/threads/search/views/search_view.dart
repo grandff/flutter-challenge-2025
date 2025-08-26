@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_study/constants/sizes.dart';
 import '../view_model/search_view_model.dart';
+import '../widgets/user_profile_widget.dart';
 
 class SearchView extends ConsumerStatefulWidget {
   const SearchView({super.key});
@@ -11,6 +13,15 @@ class SearchView extends ConsumerStatefulWidget {
 
 class _SearchViewState extends ConsumerState<SearchView> {
   final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Load trending users when view is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(searchViewModelProvider.notifier).loadTrendingUsers();
+    });
+  }
 
   @override
   void dispose() {
@@ -30,7 +41,8 @@ class _SearchViewState extends ConsumerState<SearchView> {
           children: [
             // Search header
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Sizes.size16, vertical: Sizes.size12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
@@ -40,99 +52,120 @@ class _SearchViewState extends ConsumerState<SearchView> {
                   ),
                 ),
               ),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: Colors.grey[600],
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(
-                            color: Colors.grey[300]!,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(
-                            color: Colors.grey[300]!,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                      onSubmitted: (query) {
-                        searchViewModel.search(query);
-                      },
+                  // Title
+                  const Text(
+                    'Search',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
-                  if (_searchController.text.isNotEmpty) ...[
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        _searchController.clear();
-                        searchViewModel.clearSearch();
-                      },
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.grey[600],
-                        size: 24,
+                  const SizedBox(height: Sizes.size12),
+                  // Search bar
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search',
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Colors.grey[600],
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide(
+                                color: Colors.grey[300]!,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide(
+                                color: Colors.grey[300]!,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: const BorderSide(
+                                color: Colors.black,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: Sizes.size16,
+                              vertical: Sizes.size12,
+                            ),
+                          ),
+                          onChanged: (query) {
+                            if (query.isEmpty) {
+                              searchViewModel.clearSearch();
+                            } else {
+                              searchViewModel.search(query);
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                      if (_searchController.text.isNotEmpty) ...[
+                        const SizedBox(width: Sizes.size8),
+                        GestureDetector(
+                          onTap: () {
+                            _searchController.clear();
+                            searchViewModel.clearSearch();
+                          },
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.grey[600],
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ],
               ),
             ),
-            // Search results
+            // Search results or trending users
             Expanded(
               child: searchState.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : searchState.results.isEmpty && searchState.query.isNotEmpty
+                  : searchState.error != null
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.search_off,
+                                Icons.error_outline,
                                 color: Colors.grey[400],
                                 size: 64,
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: Sizes.size16),
                               Text(
-                                'No results found',
+                                'Error loading results',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: Sizes.size8),
                               Text(
-                                'Try searching with different keywords',
+                                searchState.error!,
                                 style: TextStyle(
                                   color: Colors.grey[500],
                                   fontSize: 14,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
                         )
-                      : searchState.query.isEmpty
+                      : searchState.users.isEmpty
                           ? Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -142,7 +175,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                                     color: Colors.grey[400],
                                     size: 64,
                                   ),
-                                  const SizedBox(height: 16),
+                                  const SizedBox(height: Sizes.size16),
                                   Text(
                                     'Search for posts, people, or topics',
                                     style: TextStyle(
@@ -155,15 +188,19 @@ class _SearchViewState extends ConsumerState<SearchView> {
                               ),
                             )
                           : ListView.builder(
-                              padding: const EdgeInsets.all(16),
-                              itemCount: searchState.results.length,
+                              itemCount: searchState.users.length,
                               itemBuilder: (context, index) {
-                                final result = searchState.results[index];
-                                return ListTile(
-                                  title: Text(result),
-                                  onTap: () {
-                                    // TODO: Navigate to result
-                                  },
+                                final user = searchState.users[index];
+                                return Column(
+                                  children: [
+                                    UserProfileWidget(user: user),
+                                    if (index < searchState.users.length - 1)
+                                      Divider(
+                                        height: 1,
+                                        color: Colors.grey[200],
+                                        indent: Sizes.size60,
+                                      ),
+                                  ],
                                 );
                               },
                             ),
