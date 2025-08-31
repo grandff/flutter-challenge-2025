@@ -21,7 +21,9 @@ class NavItemWidget extends StatelessWidget {
         padding: const EdgeInsets.all(Sizes.size8),
         child: Icon(
           icon,
-          color: isSelected ? Colors.black : Colors.grey[200],
+          color: isSelected 
+              ? Theme.of(context).iconTheme.color 
+              : Theme.of(context).iconTheme.color?.withOpacity(0.3),
           size: Sizes.size28,
         ),
       ),

@@ -21,12 +21,13 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
     final privacyViewModel = ref.read(privacyViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon:
+              Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
           onPressed: () {
             if (widget.onBackToProfile != null) {
               widget.onBackToProfile!();
@@ -35,10 +36,10 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
             }
           },
         ),
-        title: const Text(
+        title: Text(
           'Privacy',
           style: TextStyle(
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -55,14 +56,19 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
                     children: [
                       Icon(
                         Icons.error_outline,
-                        color: Colors.grey[400],
+                        color:
+                            Theme.of(context).iconTheme.color?.withOpacity(0.4),
                         size: 64,
                       ),
                       const SizedBox(height: Sizes.size16),
                       Text(
                         'Error loading privacy settings',
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.color
+                              ?.withOpacity(0.6),
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
@@ -71,7 +77,11 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
                       Text(
                         privacyState.error!,
                         style: TextStyle(
-                          color: Colors.grey[500],
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withOpacity(0.5),
                           fontSize: 14,
                         ),
                         textAlign: TextAlign.center,
@@ -97,7 +107,7 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
                     // Separator
                     Divider(
                       height: 1,
-                      color: Colors.grey[200],
+                      color: Theme.of(context).dividerColor,
                       indent: Sizes.size16,
                       endIndent: Sizes.size16,
                     ),
@@ -134,12 +144,12 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Other privacy settings',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
             const SizedBox(height: Sizes.size8),
@@ -147,7 +157,11 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
               privacyState.sectionDescriptions['other_privacy'] ?? '',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[600],
+                color: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.color
+                    ?.withOpacity(0.6),
               ),
             ),
           ],
@@ -171,15 +185,15 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
             children: [
               Icon(
                 setting.icon,
-                color: Colors.grey[700],
+                color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
                 size: Sizes.size24,
               ),
               const SizedBox(width: Sizes.size12),
               Text(
                 setting.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
             ],
@@ -188,7 +202,7 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
           onChanged: (value) {
             privacyViewModel.updatePrivacySetting(setting.id, value);
           },
-          activeThumbColor: Colors.black,
+          activeThumbColor: Theme.of(context).primaryColor,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: Sizes.size16,
             vertical: Sizes.size4,
@@ -216,13 +230,17 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
                 setting.value ?? '',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.color
+                      ?.withOpacity(0.6),
                 ),
               ),
               const SizedBox(width: Sizes.size4),
               Icon(
                 Icons.chevron_right,
-                color: Colors.grey[400],
+                color: Theme.of(context).iconTheme.color?.withOpacity(0.4),
                 size: Sizes.size20,
               ),
             ],
@@ -282,9 +300,6 @@ class _PrivacyViewState extends ConsumerState<PrivacyView> {
             _showComingSoonDialog(context, setting.title);
           },
         );
-
-      default:
-        return const SizedBox.shrink();
     }
   }
 

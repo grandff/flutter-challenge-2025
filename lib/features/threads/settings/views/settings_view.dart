@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_study/constants/sizes.dart';
+import 'package:flutter_study/common/theme_provider.dart';
 
 import '../view_model/settings_view_model.dart';
 import 'privacy_view.dart';
@@ -22,14 +23,17 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
   Widget build(BuildContext context) {
     final settingsState = ref.watch(settingsViewModelProvider);
     final settingsViewModel = ref.read(settingsViewModelProvider.notifier);
+    final themeMode = ref.watch(themeProvider);
+    final themeNotifier = ref.read(themeProvider.notifier);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon:
+              Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
           onPressed: () {
             if (widget.onBackToProfile != null) {
               widget.onBackToProfile!();
@@ -38,10 +42,10 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
             }
           },
         ),
-        title: const Text(
+        title: Text(
           'Settings',
           style: TextStyle(
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -50,23 +54,51 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: Sizes.size8),
         children: [
+          // Dark Mode Toggle
+          ListTile(
+            leading: Icon(
+              themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
+              color: Theme.of(context).iconTheme.color,
+              size: Sizes.size24,
+            ),
+            title: Text(
+              'Dark Mode',
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
+            ),
+            trailing: CupertinoSwitch(
+              value: themeMode == ThemeMode.dark,
+              onChanged: (value) {
+                themeNotifier.toggleTheme();
+              },
+              activeTrackColor: Theme.of(context).primaryColor,
+            ),
+          ),
+          // Separator
+          Divider(
+            height: 1,
+            color: Theme.of(context).dividerColor,
+            indent: Sizes.size60,
+          ),
           // Settings items
           ...settingsState.settingsItems.map((item) => ListTile(
                 leading: Icon(
                   item.icon,
-                  color: Colors.grey[700],
+                  color: Theme.of(context).iconTheme.color,
                   size: Sizes.size24,
                 ),
                 title: Text(
                   item.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
-                trailing: const Icon(
+                trailing: Icon(
                   Icons.chevron_right,
-                  color: Colors.grey,
+                  color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                   size: Sizes.size20,
                 ),
                 onTap: () {
@@ -98,7 +130,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
           // Separator
           Divider(
             height: 1,
-            color: Colors.grey[200],
+            color: Theme.of(context).dividerColor,
             indent: Sizes.size60,
           ),
           // Logout button

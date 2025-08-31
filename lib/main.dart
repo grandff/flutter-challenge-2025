@@ -2,48 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'common/theme_provider.dart';
+import 'common/router.dart';
 import 'features/pomodoro/views/pomodoro_view.dart';
 import 'features/uiclone/views/uiclone_view.dart';
 import 'features/movieflix/views/home_view.dart';
 import 'features/twitter/initial/views/initial_view.dart';
-import 'features/threads/home/views/home_view.dart' as threads;
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
+      themeMode: themeMode,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
         textTheme: GoogleFonts.robotoSlabTextTheme(
           Theme.of(context).textTheme,
         ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+        textTheme: GoogleFonts.robotoSlabTextTheme(
+          ThemeData.dark().textTheme,
+        ),
+      ),
+      routerConfig: router,
     );
   }
 }
@@ -212,12 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const threads.HomeView(),
-                  ),
-                );
+                router.go('/');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,

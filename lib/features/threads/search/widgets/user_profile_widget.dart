@@ -36,10 +36,10 @@ class UserProfileWidget extends ConsumerWidget {
                   children: [
                     Text(
                       user.username,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                     if (user.isVerified) ...[
@@ -57,7 +57,11 @@ class UserProfileWidget extends ConsumerWidget {
                   user.fullName,
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey[600],
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.color
+                        ?.withOpacity(0.6),
                   ),
                 ),
                 const SizedBox(height: Sizes.size2),
@@ -65,7 +69,11 @@ class UserProfileWidget extends ConsumerWidget {
                   user.followers,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[500],
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.color
+                        ?.withOpacity(0.5),
                   ),
                 ),
               ],
@@ -80,10 +88,14 @@ class UserProfileWidget extends ConsumerWidget {
                     .toggleFollow(user.id);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: user.isFollowing ? Colors.white : Colors.black,
-                foregroundColor: user.isFollowing ? Colors.black : Colors.white,
+                backgroundColor: user.isFollowing
+                    ? Theme.of(context).scaffoldBackgroundColor
+                    : Theme.of(context).primaryColor,
+                foregroundColor: user.isFollowing
+                    ? Theme.of(context).textTheme.bodyLarge?.color
+                    : Theme.of(context).colorScheme.onPrimary,
                 side: user.isFollowing
-                    ? BorderSide(color: Colors.grey[300]!)
+                    ? BorderSide(color: Theme.of(context).dividerColor)
                     : BorderSide.none,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -99,7 +111,9 @@ class UserProfileWidget extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: user.isFollowing ? Colors.black : Colors.white,
+                  color: user.isFollowing
+                      ? Theme.of(context).textTheme.bodyLarge?.color
+                      : Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),
@@ -109,8 +123,3 @@ class UserProfileWidget extends ConsumerWidget {
     );
   }
 }
-
-
-
-
-

@@ -35,10 +35,10 @@ class PostItemWidget extends ConsumerWidget {
                   children: [
                     Text(
                       post.username,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                     if (post.isVerified) ...[
@@ -56,13 +56,17 @@ class PostItemWidget extends ConsumerWidget {
                 post.timeAgo,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[600],
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.color
+                      ?.withOpacity(0.6),
                 ),
               ),
               const SizedBox(width: Sizes.size8),
               Icon(
                 Icons.more_horiz,
-                color: Colors.grey[600],
+                color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                 size: Sizes.size20,
               ),
             ],
@@ -71,9 +75,9 @@ class PostItemWidget extends ConsumerWidget {
           // Post content
           Text(
             post.content,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.black,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
           // Quoted post (if exists)
@@ -83,9 +87,9 @@ class PostItemWidget extends ConsumerWidget {
               margin: const EdgeInsets.only(left: Sizes.size20),
               padding: const EdgeInsets.all(Sizes.size12),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,10 +104,10 @@ class PostItemWidget extends ConsumerWidget {
                       const SizedBox(width: Sizes.size8),
                       Text(
                         post.quotedPost!.username,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                       if (post.quotedPost!.isVerified) ...[
@@ -121,7 +125,11 @@ class PostItemWidget extends ConsumerWidget {
                     post.quotedPost!.content,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[700],
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.color
+                          ?.withOpacity(0.7),
                     ),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
@@ -132,7 +140,11 @@ class PostItemWidget extends ConsumerWidget {
                       "${post.quotedPost!.repliesCount} replies",
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey[600],
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.color
+                            ?.withOpacity(0.6),
                       ),
                     ),
                   ],
@@ -234,7 +246,3 @@ class PostItemWidget extends ConsumerWidget {
     );
   }
 }
-
-
-
-

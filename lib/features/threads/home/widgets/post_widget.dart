@@ -45,7 +45,7 @@ class PostWidget extends ConsumerWidget {
                         Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.grey[300],
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                           child: post.userProfileImage.isNotEmpty
                               ? ClipOval(
@@ -56,11 +56,11 @@ class PostWidget extends ConsumerWidget {
                                       return Container(
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Colors.grey[400],
+                                          color: Theme.of(context).colorScheme.surface,
                                         ),
                                         child: Icon(
                                           Icons.person,
-                                          color: Colors.grey[600],
+                                          color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                                           size: Sizes.size20,
                                         ),
                                       );
@@ -69,7 +69,7 @@ class PostWidget extends ConsumerWidget {
                                 )
                               : Icon(
                                   Icons.person,
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                                   size: Sizes.size20,
                                 ),
                         ),
@@ -81,10 +81,10 @@ class PostWidget extends ConsumerWidget {
                             width: Sizes.size20,
                             height: Sizes.size20,
                             decoration: BoxDecoration(
-                              color: Colors.black,
+                              color: Theme.of(context).primaryColor,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.white,
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 width: Sizes.size2,
                               ),
                             ),
@@ -106,7 +106,7 @@ class PostWidget extends ConsumerWidget {
                     Expanded(
                       child: Container(
                         width: Sizes.size2,
-                        color: Colors.grey[300],
+                        color: Theme.of(context).dividerColor,
                       ),
                     ),
                   ],
@@ -124,9 +124,10 @@ class PostWidget extends ConsumerWidget {
                     children: [
                       Text(
                         post.username,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: Sizes.size16,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                       if (post.isVerified) ...[
@@ -149,7 +150,7 @@ class PostWidget extends ConsumerWidget {
                       Text(
                         post.timeAgo,
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                           fontSize: Sizes.size14,
                         ),
                       ),
@@ -158,7 +159,7 @@ class PostWidget extends ConsumerWidget {
                         onTap: () => _showPostOptions(context),
                         child: Icon(
                           Icons.more_horiz,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                           size: Sizes.size20,
                         ),
                       ),
@@ -169,15 +170,16 @@ class PostWidget extends ConsumerWidget {
                   if (post.content.isNotEmpty)
                     Text(
                       post.content,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: Sizes.size16,
                         height: 1.4,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                   Gaps.v12,
                   // Images (if any)
                   if (post.hasImages) ...[
-                    _buildImageCarousel(),
+                    _buildImageCarousel(context),
                     Gaps.v12,
                   ],
                   // Interaction buttons
@@ -185,7 +187,7 @@ class PostWidget extends ConsumerWidget {
                     children: [
                       _buildInteractionButton(
                         icon: isLiked ? Icons.favorite : Icons.favorite_border,
-                        color: isLiked ? Colors.red : Colors.grey[600],
+                        color: isLiked ? Colors.red : Theme.of(context).iconTheme.color?.withOpacity(0.7),
                         onTap: () {
                           if (isLiked) {
                             homeViewModel.unlikePost(post.id, currentUserId);
@@ -197,7 +199,7 @@ class PostWidget extends ConsumerWidget {
                       Gaps.h24,
                       _buildInteractionButton(
                         icon: Icons.chat_bubble_outline,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
                         onTap: () {
                           // TODO: Navigate to comments
                         },
@@ -205,7 +207,7 @@ class PostWidget extends ConsumerWidget {
                       Gaps.h24,
                       _buildInteractionButton(
                         icon: Icons.repeat,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
                         onTap: () {
                           // TODO: Repost functionality
                         },
@@ -213,7 +215,7 @@ class PostWidget extends ConsumerWidget {
                       Gaps.h24,
                       _buildInteractionButton(
                         icon: Icons.send,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
                         onTap: () {
                           // TODO: Share functionality
                         },
@@ -243,10 +245,10 @@ class PostWidget extends ConsumerWidget {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
-                                              color: Colors.white,
+                                              color: Theme.of(context).scaffoldBackgroundColor,
                                               width: 1,
                                             ),
-                                            color: Colors.grey[400],
+                                            color: Theme.of(context).colorScheme.surface,
                                           ),
                                           child: ClipOval(
                                             child: Image.asset(
@@ -256,7 +258,7 @@ class PostWidget extends ConsumerWidget {
                                                   (context, error, stackTrace) {
                                                 return Icon(
                                                   Icons.person,
-                                                  color: Colors.grey[600],
+                                                  color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                                                   size: Sizes.size12,
                                                 );
                                               },
@@ -272,7 +274,7 @@ class PostWidget extends ConsumerWidget {
                             child: Text(
                               "${post.replyCount} replies · ${post.likeCount} likes",
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                                 fontSize: Sizes.size14,
                               ),
                             ),
@@ -348,14 +350,14 @@ class PostWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildImageCarousel() {
+  Widget _buildImageCarousel(BuildContext context) {
     if (post.images.isEmpty) return const SizedBox.shrink();
 
     return Container(
       height: 300,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Sizes.size12),
-        color: Colors.grey[200],
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Stack(
         children: [
@@ -375,10 +377,10 @@ class PostWidget extends ConsumerWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: Colors.grey[300],
+                        color: Theme.of(context).colorScheme.surface,
                         child: Icon(
                           Icons.image,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                           size: Sizes.size50,
                         ),
                       );

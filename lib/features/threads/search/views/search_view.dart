@@ -35,7 +35,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
     final searchViewModel = ref.read(searchViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -44,24 +44,18 @@ class _SearchViewState extends ConsumerState<SearchView> {
               padding: const EdgeInsets.symmetric(
                   horizontal: Sizes.size16, vertical: Sizes.size12),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.grey[200]!,
-                    width: 0.5,
-                  ),
-                ),
+                color: Theme.of(context).scaffoldBackgroundColor,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Title
-                  const Text(
+                  Text(
                     'Search',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.headlineMedium?.color,
                     ),
                   ),
                   const SizedBox(height: Sizes.size12),
@@ -75,24 +69,27 @@ class _SearchViewState extends ConsumerState<SearchView> {
                             hintText: 'Search',
                             prefixIcon: Icon(
                               Icons.search,
-                              color: Colors.grey[600],
+                              color: Theme.of(context)
+                                  .iconTheme
+                                  .color
+                                  ?.withOpacity(0.6),
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(25),
                               borderSide: BorderSide(
-                                color: Colors.grey[300]!,
+                                color: Theme.of(context).dividerColor,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(25),
                               borderSide: BorderSide(
-                                color: Colors.grey[300]!,
+                                color: Theme.of(context).dividerColor,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(25),
-                              borderSide: const BorderSide(
-                                color: Colors.black,
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
                               ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
@@ -118,7 +115,10 @@ class _SearchViewState extends ConsumerState<SearchView> {
                           },
                           child: Icon(
                             Icons.close,
-                            color: Colors.grey[600],
+                            color: Theme.of(context)
+                                .iconTheme
+                                .color
+                                ?.withOpacity(0.6),
                             size: 24,
                           ),
                         ),
@@ -141,14 +141,21 @@ class _SearchViewState extends ConsumerState<SearchView> {
                             children: [
                               Icon(
                                 Icons.error_outline,
-                                color: Colors.grey[400],
+                                color: Theme.of(context)
+                                    .iconTheme
+                                    .color
+                                    ?.withOpacity(0.4),
                                 size: 64,
                               ),
                               const SizedBox(height: Sizes.size16),
                               Text(
                                 'Error loading results',
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color
+                                      ?.withOpacity(0.6),
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                 ),

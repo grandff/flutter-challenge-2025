@@ -31,7 +31,7 @@ class HomeContentWidget extends ConsumerWidget {
                     Text(
                       'Error loading posts',
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.7),
                         fontSize: Sizes.size16,
                       ),
                     ),
@@ -39,7 +39,7 @@ class HomeContentWidget extends ConsumerWidget {
                     Text(
                       homeState.error!,
                       style: TextStyle(
-                        color: Colors.grey[500],
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                         fontSize: Sizes.size14,
                       ),
                       textAlign: TextAlign.center,

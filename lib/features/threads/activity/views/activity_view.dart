@@ -32,7 +32,7 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
     final activityState = ref.watch(activityViewModelProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -43,22 +43,19 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
                 vertical: Sizes.size12,
               ),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.grey[200]!,
-                    width: 0.5,
-                  ),
-                ),
+                color: Theme.of(context).scaffoldBackgroundColor,
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Text(
-                    'Activity',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  Builder(
+                    builder: (context) => Text(
+                      'Activity',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            Theme.of(context).textTheme.headlineMedium?.color,
+                      ),
                     ),
                   ),
                 ],
@@ -80,10 +77,12 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
                           vertical: Sizes.size8,
                         ),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.black : Colors.white,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: Colors.grey[300]!,
+                            color: Theme.of(context).dividerColor,
                             width: 0.5,
                           ),
                         ),
@@ -93,7 +92,9 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: isSelected ? Colors.white : Colors.black,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                       ),
@@ -116,14 +117,21 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
                             children: [
                               Icon(
                                 Icons.error_outline,
-                                color: Colors.grey[400],
+                                color: Theme.of(context)
+                                    .iconTheme
+                                    .color
+                                    ?.withOpacity(0.4),
                                 size: 64,
                               ),
                               const SizedBox(height: Sizes.size16),
                               Text(
                                 'Error loading activities',
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color
+                                      ?.withOpacity(0.6),
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -132,7 +140,11 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
                               Text(
                                 activityState.error!,
                                 style: TextStyle(
-                                  color: Colors.grey[500],
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color
+                                      ?.withOpacity(0.5),
                                   fontSize: 14,
                                 ),
                                 textAlign: TextAlign.center,
@@ -197,8 +209,3 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
     );
   }
 }
-
-
-
-
-

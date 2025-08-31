@@ -95,7 +95,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -105,20 +105,20 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: Sizes.size16, vertical: Sizes.size12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   border: Border(
                     bottom: BorderSide(
-                      color: Colors.grey[200]!,
+                      color: Theme.of(context).dividerColor,
                       width: 0.5,
                     ),
                   ),
                 ),
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: HugeIcon(
                         icon: HugeIcons.strokeRoundedThreads,
-                        color: Colors.black,
+                        color: Theme.of(context).iconTheme.color ?? Colors.black,
                         size: Sizes.size48,
                       ),
                     ),
@@ -126,7 +126,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     // Search icon
                     Icon(
                       Icons.search,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
                       size: Sizes.size24,
                     ),
                   ],
@@ -142,10 +142,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
       // Bottom navigation bar
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
           border: Border(
             top: BorderSide(
-              color: Colors.grey[200]!,
+              color: Theme.of(context).dividerColor,
               width: 0.5,
             ),
           ),

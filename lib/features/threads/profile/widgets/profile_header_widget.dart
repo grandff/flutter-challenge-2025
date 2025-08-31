@@ -4,7 +4,6 @@ import 'package:flutter_study/constants/sizes.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../models/profile_model.dart';
 import '../../settings/views/settings_view.dart';
-import '../../home/views/home_view.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
   final ProfileModel profile;
@@ -32,7 +31,7 @@ class ProfileHeaderWidget extends StatelessWidget {
               // Globe icon
               Icon(
                 Icons.public,
-                color: Colors.grey[600],
+                color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                 size: Sizes.size24,
               ),
               // Right side icons
@@ -41,7 +40,9 @@ class ProfileHeaderWidget extends StatelessWidget {
                   // Camera icon
                   HugeIcon(
                     icon: HugeIcons.strokeRoundedInstagram,
-                    color: Colors.grey[600]!,
+                    color:
+                        Theme.of(context).iconTheme.color?.withOpacity(0.6) ??
+                            Colors.grey[600]!,
                     size: Sizes.size24,
                   ),
                   const SizedBox(width: Sizes.size16),
@@ -60,7 +61,9 @@ class ProfileHeaderWidget extends StatelessWidget {
                     },
                     child: HugeIcon(
                       icon: HugeIcons.strokeRoundedMenu01,
-                      color: Colors.grey[600]!,
+                      color:
+                          Theme.of(context).iconTheme.color?.withOpacity(0.6) ??
+                              Colors.grey[600]!,
                       size: Sizes.size24,
                     ),
                   ),
@@ -81,10 +84,11 @@ class ProfileHeaderWidget extends StatelessWidget {
                     // Full name
                     Text(
                       profile.fullName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color:
+                            Theme.of(context).textTheme.headlineMedium?.color,
                       ),
                     ),
                     const SizedBox(height: Sizes.size4),
@@ -95,7 +99,11 @@ class ProfileHeaderWidget extends StatelessWidget {
                           profile.username,
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.color
+                                ?.withOpacity(0.6),
                           ),
                         ),
                         const SizedBox(width: Sizes.size8),
@@ -105,14 +113,15 @@ class ProfileHeaderWidget extends StatelessWidget {
                             vertical: Sizes.size4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             profile.threadsNetLink,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Colors.white,
+                              color:
+                                  Theme.of(context).textTheme.bodySmall?.color,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -123,9 +132,9 @@ class ProfileHeaderWidget extends StatelessWidget {
                     // Bio
                     Text(
                       profile.bio,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                     const SizedBox(height: Sizes.size12),
@@ -145,7 +154,8 @@ class ProfileHeaderWidget extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.white,
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                     width: 1,
                                   ),
                                 ),

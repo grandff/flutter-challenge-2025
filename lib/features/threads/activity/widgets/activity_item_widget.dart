@@ -36,9 +36,11 @@ class ActivityItemWidget extends ConsumerWidget {
                   width: Sizes.size16,
                   height: Sizes.size16,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1),
+                    border: Border.all(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        width: 1),
                   ),
                   child: _getActivityIcon(),
                 ),
@@ -55,10 +57,10 @@ class ActivityItemWidget extends ConsumerWidget {
                   children: [
                     Text(
                       activity.username,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                     if (activity.isVerified) ...[
@@ -74,7 +76,11 @@ class ActivityItemWidget extends ConsumerWidget {
                       activity.timeAgo,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.color
+                            ?.withOpacity(0.6),
                       ),
                     ),
                   ],
@@ -85,7 +91,11 @@ class ActivityItemWidget extends ConsumerWidget {
                     activity.activityType,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.color
+                          ?.withOpacity(0.6),
                     ),
                   ),
                 ],
@@ -93,9 +103,9 @@ class ActivityItemWidget extends ConsumerWidget {
                   const SizedBox(height: Sizes.size4),
                   Text(
                     activity.message,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                 ],
@@ -113,9 +123,13 @@ class ActivityItemWidget extends ConsumerWidget {
                       .toggleFollow(activity.userId);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.grey[600],
-                  side: BorderSide(color: Colors.grey[300]!),
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  foregroundColor: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.color
+                      ?.withOpacity(0.6),
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -175,8 +189,3 @@ class ActivityItemWidget extends ConsumerWidget {
     }
   }
 }
-
-
-
-
-

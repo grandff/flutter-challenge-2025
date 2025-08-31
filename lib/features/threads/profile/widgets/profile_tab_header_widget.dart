@@ -15,7 +15,7 @@ class ProfileTabHeaderWidget extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         children: [
           // Tab buttons
@@ -30,7 +30,7 @@ class ProfileTabHeaderWidget extends SliverPersistentHeaderDelegate {
                       border: Border(
                         bottom: BorderSide(
                           color: currentTab == ProfileTab.threads
-                              ? Colors.black
+                              ? Theme.of(context).primaryColor
                               : Colors.transparent,
                           width: 2,
                         ),
@@ -45,8 +45,12 @@ class ProfileTabHeaderWidget extends SliverPersistentHeaderDelegate {
                             ? FontWeight.bold
                             : FontWeight.normal,
                         color: currentTab == ProfileTab.threads
-                            ? Colors.black
-                            : Colors.grey[600],
+                            ? Theme.of(context).textTheme.bodyLarge?.color
+                            : Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.color
+                                ?.withOpacity(0.6),
                       ),
                     ),
                   ),
@@ -61,7 +65,7 @@ class ProfileTabHeaderWidget extends SliverPersistentHeaderDelegate {
                       border: Border(
                         bottom: BorderSide(
                           color: currentTab == ProfileTab.replies
-                              ? Colors.black
+                              ? Theme.of(context).primaryColor
                               : Colors.transparent,
                           width: 2,
                         ),
@@ -76,8 +80,12 @@ class ProfileTabHeaderWidget extends SliverPersistentHeaderDelegate {
                             ? FontWeight.bold
                             : FontWeight.normal,
                         color: currentTab == ProfileTab.replies
-                            ? Colors.black
-                            : Colors.grey[600],
+                            ? Theme.of(context).textTheme.bodyLarge?.color
+                            : Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.color
+                                ?.withOpacity(0.6),
                       ),
                     ),
                   ),
@@ -88,7 +96,7 @@ class ProfileTabHeaderWidget extends SliverPersistentHeaderDelegate {
           // Divider line
           Container(
             height: 0.5,
-            color: Colors.grey[200],
+            color: Theme.of(context).dividerColor,
           ),
         ],
       ),
@@ -106,7 +114,3 @@ class ProfileTabHeaderWidget extends SliverPersistentHeaderDelegate {
     return true;
   }
 }
-
-
-
-

@@ -246,9 +246,9 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(
           top: Radius.circular(Sizes.size16),
         ),
       ),
@@ -260,7 +260,7 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
             width: Sizes.size40,
             height: Sizes.size4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: Theme.of(context).dividerColor,
               borderRadius: BorderRadius.circular(Sizes.size2),
             ),
           ),
@@ -274,21 +274,21 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text(
+                  child: Text(
                     'Cancel',
                     style: TextStyle(
                       fontSize: Sizes.size16,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                 ),
                 const Spacer(),
-                const Text(
+                Text(
                   'New thread',
                   style: TextStyle(
                     fontSize: Sizes.size20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: Theme.of(context).textTheme.titleLarge?.color,
                   ),
                 ),
                 const Spacer(),
@@ -299,7 +299,7 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                     style: TextStyle(
                       fontSize: Sizes.size16,
                       fontWeight: FontWeight.w600,
-                      color: _canPost ? Colors.black : Colors.grey[400],
+                      color: _canPost ? Theme.of(context).textTheme.bodyLarge?.color : Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.4),
                     ),
                   ),
                 ),
@@ -322,7 +322,7 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                         height: Sizes.size40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.blue[100],
+                          color: Theme.of(context).colorScheme.primaryContainer,
                         ),
                         child: ClipOval(
                           child: Image.asset(
@@ -332,7 +332,7 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                               return Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Colors.blue[100],
+                                  color: Theme.of(context).colorScheme.primaryContainer,
                                 ),
                                 child: Icon(
                                   Icons.eco,
@@ -350,12 +350,12 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'jane_mobbin',
                               style: TextStyle(
                                 fontSize: Sizes.size16,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black,
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
                               ),
                             ),
                             Gaps.v8,
@@ -363,18 +363,19 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                               controller: _textController,
                               maxLines: null,
                               maxLength: 500,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 hintText: 'Start a thread...',
                                 hintStyle: TextStyle(
                                   fontSize: Sizes.size16,
-                                  color: Colors.grey,
+                                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                                 ),
                                 border: InputBorder.none,
                                 counterText: '',
                               ),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: Sizes.size16,
                                 height: 1.4,
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
                               ),
                             ),
                           ],

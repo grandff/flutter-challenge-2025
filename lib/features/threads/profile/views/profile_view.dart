@@ -37,16 +37,16 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     final profileViewModel = ref.read(profileViewModelProvider.notifier);
 
     if (profileState.profile == null) {
-      return const Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: const Center(
           child: CircularProgressIndicator(),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           // SliverAppBar for profile header
@@ -55,7 +55,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             floating: false,
             pinned: true,
             automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
               background: ProfileHeaderWidget(
