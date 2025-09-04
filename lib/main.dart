@@ -19,12 +19,12 @@ class MyApp extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
+    final themeNotifier = ref.watch(themeProvider);
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      themeMode: themeMode,
+      themeMode: themeNotifier.themeMode,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
@@ -32,7 +32,7 @@ class MyApp extends ConsumerWidget {
         ),
         useMaterial3: true,
         textTheme: GoogleFonts.robotoSlabTextTheme(
-          Theme.of(context).textTheme,
+          ThemeData.light().textTheme,
         ),
       ),
       darkTheme: ThemeData(

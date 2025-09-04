@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeNotifier extends StateNotifier<ThemeMode> {
-  ThemeNotifier() : super(ThemeMode.light) {
-    _loadTheme();
-  }
+class ThemeNotifier extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.light;
+
+  ThemeMode get themeMode => _themeMode;
+
+  bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   static const String _themeKey = 'theme_mode';
+
+  ThemeNotifier() {
+    _loadTheme();
+  }
 
   Future<void> _loadTheme() async {
     try {
@@ -15,19 +21,23 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
       final savedTheme = prefs.getString(_themeKey);
 
       if (savedTheme != null) {
-        state = ThemeMode.values.firstWhere(
+        _themeMode = ThemeMode.values.firstWhere(
           (mode) => mode.toString() == savedTheme,
           orElse: () => ThemeMode.light,
         );
+        notifyListeners();
       }
     } catch (e) {
       // If there's an error loading the theme, default to light mode
-      state = ThemeMode.light;
+      _themeMode = ThemeMode.light;
+      notifyListeners();
     }
   }
 
   Future<void> setTheme(ThemeMode themeMode) async {
-    state = themeMode;
+    _themeMode = themeMode;
+    notifyListeners();
+
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_themeKey, themeMode.toString());
@@ -39,14 +49,11 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
 
   void toggleTheme() {
     final newTheme =
-        state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+        _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     setTheme(newTheme);
   }
-
-  bool get isDarkMode => state == ThemeMode.dark;
 }
 
-final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) {
+final themeProvider = ChangeNotifierProvider<ThemeNotifier>((ref) {
   return ThemeNotifier();
 });
-
