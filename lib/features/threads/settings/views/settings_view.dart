@@ -23,7 +23,8 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
   Widget build(BuildContext context) {
     final settingsState = ref.watch(settingsViewModelProvider);
     final settingsViewModel = ref.read(settingsViewModelProvider.notifier);
-    final themeNotifier = ref.watch(themeProvider);
+    final themeMode = ref.watch(themeProvider);
+    final themeNotifier = ref.read(themeProvider.notifier);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -56,7 +57,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
           // Dark Mode Toggle
           ListTile(
             leading: Icon(
-              themeNotifier.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+              themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
               color: Theme.of(context).iconTheme.color,
               size: Sizes.size24,
             ),
@@ -68,7 +69,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               ),
             ),
             trailing: CupertinoSwitch(
-              value: themeNotifier.isDarkMode,
+              value: themeMode == ThemeMode.dark,
               onChanged: (value) {
                 themeNotifier.toggleTheme();
               },
