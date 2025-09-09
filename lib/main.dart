@@ -1,15 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'common/theme_provider.dart';
 import 'common/router.dart';
+import 'core/supabase_client.dart';
 import 'features/pomodoro/views/pomodoro_view.dart';
 import 'features/uiclone/views/uiclone_view.dart';
 import 'features/movieflix/views/home_view.dart';
 import 'features/twitter/initial/views/initial_view.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Cache Manager 초기화 (cached_network_image를 위해 필요)
+  try {
+    await DefaultCacheManager().emptyCache();
+    print('✅ [Main] Cache Manager 초기화 완료');
+  } catch (e) {
+    print('⚠️ [Main] Cache Manager 초기화 실패: $e');
+  }
+
+  // Supabase 초기화
+  await SupabaseService.initialize();
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_study/constants/gaps.dart';
 import 'package:flutter_study/constants/sizes.dart';
+// import 'package:cached_network_image/cached_network_image.dart'; // 임시로 비활성화
 import '../models/post_model.dart';
-import '../view_model/home_view_model.dart';
+// import '../view_model/home_view_model.dart'; // TODO: 좋아요 기능 구현 시 다시 활성화
 import 'post_options_bottom_sheet.dart';
 import 'report_bottom_sheet.dart';
 
@@ -19,8 +20,9 @@ class PostWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final homeViewModel = ref.read(homeViewModelProvider.notifier);
-    final isLiked = homeViewModel.isPostLiked(post.id, currentUserId);
+    // TODO: 좋아요 기능은 추후 구현 예정
+    // final homeViewModel = ref.read(homeViewModelProvider.notifier);
+    // final isLiked = homeViewModel.isPostLiked(post.id, currentUserId);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -45,7 +47,8 @@ class PostWidget extends ConsumerWidget {
                         Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Theme.of(context).colorScheme.surface,
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
                           ),
                           child: post.userProfileImage.isNotEmpty
                               ? ClipOval(
@@ -56,47 +59,69 @@ class PostWidget extends ConsumerWidget {
                                       return Container(
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Theme.of(context).colorScheme.surface,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primaryContainer,
                                         ),
-                                        child: Icon(
-                                          Icons.person,
-                                          color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
-                                          size: Sizes.size20,
+                                        child: Center(
+                                          child: Text(
+                                            post.username.isNotEmpty
+                                                ? post.username[0].toUpperCase()
+                                                : 'U',
+                                            style: TextStyle(
+                                              fontSize: Sizes.size18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimaryContainer,
+                                            ),
+                                          ),
                                         ),
                                       );
                                     },
                                   ),
                                 )
-                              : Icon(
-                                  Icons.person,
-                                  color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
-                                  size: Sizes.size20,
+                              : Center(
+                                  child: Text(
+                                    post.username.isNotEmpty
+                                        ? post.username[0].toUpperCase()
+                                        : 'U',
+                                    style: TextStyle(
+                                      fontSize: Sizes.size18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryContainer,
+                                    ),
+                                  ),
                                 ),
                         ),
-                        // Follow (+) badge at bottom-right
-                        Positioned(
-                          right: -Sizes.size2,
-                          bottom: -Sizes.size2,
-                          child: Container(
-                            width: Sizes.size20,
-                            height: Sizes.size20,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Theme.of(context).scaffoldBackgroundColor,
-                                width: Sizes.size2,
+                        // Follow (+) badge at bottom-right (본인 게시글이 아닐 때만 표시)
+                        if (post.userId != currentUserId)
+                          Positioned(
+                            right: -Sizes.size2,
+                            bottom: -Sizes.size2,
+                            child: Container(
+                              width: Sizes.size20,
+                              height: Sizes.size20,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  width: Sizes.size2,
+                                ),
                               ),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: Sizes.size12,
+                              child: const Center(
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: Sizes.size12,
+                                ),
                               ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -150,7 +175,11 @@ class PostWidget extends ConsumerWidget {
                       Text(
                         post.timeAgo,
                         style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withOpacity(0.6),
                           fontSize: Sizes.size14,
                         ),
                       ),
@@ -159,7 +188,10 @@ class PostWidget extends ConsumerWidget {
                         onTap: () => _showPostOptions(context),
                         child: Icon(
                           Icons.more_horiz,
-                          color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
+                          color: Theme.of(context)
+                              .iconTheme
+                              .color
+                              ?.withOpacity(0.6),
                           size: Sizes.size20,
                         ),
                       ),
@@ -186,20 +218,18 @@ class PostWidget extends ConsumerWidget {
                   Row(
                     children: [
                       _buildInteractionButton(
-                        icon: isLiked ? Icons.favorite : Icons.favorite_border,
-                        color: isLiked ? Colors.red : Theme.of(context).iconTheme.color?.withOpacity(0.7),
+                        icon: Icons.favorite_border, // 임시로 빈 하트로 설정
+                        color:
+                            Theme.of(context).iconTheme.color?.withOpacity(0.7),
                         onTap: () {
-                          if (isLiked) {
-                            homeViewModel.unlikePost(post.id, currentUserId);
-                          } else {
-                            homeViewModel.likePost(post.id, currentUserId);
-                          }
+                          // TODO: 좋아요 기능은 추후 구현 예정
                         },
                       ),
                       Gaps.h24,
                       _buildInteractionButton(
                         icon: Icons.chat_bubble_outline,
-                        color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
+                        color:
+                            Theme.of(context).iconTheme.color?.withOpacity(0.7),
                         onTap: () {
                           // TODO: Navigate to comments
                         },
@@ -207,7 +237,8 @@ class PostWidget extends ConsumerWidget {
                       Gaps.h24,
                       _buildInteractionButton(
                         icon: Icons.repeat,
-                        color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
+                        color:
+                            Theme.of(context).iconTheme.color?.withOpacity(0.7),
                         onTap: () {
                           // TODO: Repost functionality
                         },
@@ -215,7 +246,8 @@ class PostWidget extends ConsumerWidget {
                       Gaps.h24,
                       _buildInteractionButton(
                         icon: Icons.send,
-                        color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
+                        color:
+                            Theme.of(context).iconTheme.color?.withOpacity(0.7),
                         onTap: () {
                           // TODO: Share functionality
                         },
@@ -245,10 +277,13 @@ class PostWidget extends ConsumerWidget {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
-                                              color: Theme.of(context).scaffoldBackgroundColor,
+                                              color: Theme.of(context)
+                                                  .scaffoldBackgroundColor,
                                               width: 1,
                                             ),
-                                            color: Theme.of(context).colorScheme.surface,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surface,
                                           ),
                                           child: ClipOval(
                                             child: Image.asset(
@@ -258,7 +293,10 @@ class PostWidget extends ConsumerWidget {
                                                   (context, error, stackTrace) {
                                                 return Icon(
                                                   Icons.person,
-                                                  color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
+                                                  color: Theme.of(context)
+                                                      .iconTheme
+                                                      .color
+                                                      ?.withOpacity(0.6),
                                                   size: Sizes.size12,
                                                 );
                                               },
@@ -274,7 +312,11 @@ class PostWidget extends ConsumerWidget {
                             child: Text(
                               "${post.replyCount} replies · ${post.likeCount} likes",
                               style: TextStyle(
-                                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color
+                                    ?.withOpacity(0.6),
                                 fontSize: Sizes.size14,
                               ),
                             ),
@@ -351,7 +393,18 @@ class PostWidget extends ConsumerWidget {
   }
 
   Widget _buildImageCarousel(BuildContext context) {
-    if (post.images.isEmpty) return const SizedBox.shrink();
+    if (post.images.isEmpty && post.imageUrl == null)
+      return const SizedBox.shrink();
+
+    // 이미지 URL 리스트 생성 (imageUrl이 있으면 우선 사용, 없으면 images 리스트 사용)
+    final imageUrls = <String>[];
+    if (post.imageUrl != null && post.imageUrl!.isNotEmpty) {
+      imageUrls.add(post.imageUrl!);
+    } else {
+      imageUrls.addAll(post.images);
+    }
+
+    if (imageUrls.isEmpty) return const SizedBox.shrink();
 
     return Container(
       height: 300,
@@ -366,21 +419,33 @@ class PostWidget extends ConsumerWidget {
               viewportFraction: 0.85,
               initialPage: 0,
             ),
-            itemCount: post.images.length,
+            itemCount: imageUrls.length,
             itemBuilder: (context, index) {
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: Sizes.size4),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(Sizes.size12),
-                  child: Image.asset(
-                    post.images[index],
+                  child: Image.network(
+                    imageUrls[index],
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.grey[200],
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: Theme.of(context).colorScheme.surface,
                         child: Icon(
                           Icons.image,
-                          color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
+                          color: Theme.of(context)
+                              .iconTheme
+                              .color
+                              ?.withOpacity(0.6),
                           size: Sizes.size50,
                         ),
                       );
@@ -391,7 +456,7 @@ class PostWidget extends ConsumerWidget {
             },
           ),
           // Page indicator dots
-          if (post.images.length > 1)
+          if (imageUrls.length > 1)
             Positioned(
               bottom: Sizes.size12,
               left: 0,
@@ -399,7 +464,7 @@ class PostWidget extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
-                  post.images.length,
+                  imageUrls.length,
                   (index) => Container(
                     margin: const EdgeInsets.symmetric(horizontal: Sizes.size4),
                     width: Sizes.size8,

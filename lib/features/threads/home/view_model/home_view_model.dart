@@ -2,18 +2,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/post_model.dart';
 import '../repos/post_repo.dart';
 
-final postRepositoryProvider = Provider<PostRepository>((ref) {
-  return PostRepositoryImpl();
-});
+final postRepoProvider = Provider<PostRepo>((ref) => PostRepo());
 
 final postsProvider = FutureProvider<List<PostModel>>((ref) async {
-  final repository = ref.read(postRepositoryProvider);
-  return await repository.getPosts();
+  final postRepo = ref.watch(postRepoProvider);
+  return await postRepo.getAllPosts();
 });
 
-final homeViewModelProvider = StateNotifierProvider<HomeViewModel, HomeState>((ref) {
-  final repository = ref.read(postRepositoryProvider);
-  return HomeViewModel(repository);
+final homeViewModelProvider =
+    StateNotifierProvider<HomeViewModel, HomeState>((ref) {
+  final postRepo = ref.read(postRepoProvider);
+  return HomeViewModel(postRepo);
 });
 
 class HomeState {
@@ -45,15 +44,15 @@ class HomeState {
 }
 
 class HomeViewModel extends StateNotifier<HomeState> {
-  final PostRepository _repository;
+  final PostRepo _postRepo;
 
-  HomeViewModel(this._repository) : super(HomeState());
+  HomeViewModel(this._postRepo) : super(HomeState());
 
   Future<void> loadPosts() async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
-      final posts = await _repository.getPosts();
+      final posts = await _postRepo.getAllPosts();
       state = state.copyWith(posts: posts, isLoading: false);
     } catch (e) {
       state = state.copyWith(
@@ -65,9 +64,9 @@ class HomeViewModel extends StateNotifier<HomeState> {
 
   Future<void> refreshPosts() async {
     state = state.copyWith(isRefreshing: true);
-    
+
     try {
-      final posts = await _repository.getPosts();
+      final posts = await _postRepo.getAllPosts();
       state = state.copyWith(posts: posts, isRefreshing: false);
     } catch (e) {
       state = state.copyWith(
@@ -77,54 +76,17 @@ class HomeViewModel extends StateNotifier<HomeState> {
     }
   }
 
-  Future<void> likePost(String postId, String userId) async {
-    try {
-      await _repository.likePost(postId, userId);
-      // Update local state
-      final updatedPosts = state.posts.map((post) {
-        if (post.id == postId) {
-          final newLikedBy = List<String>.from(post.likedBy);
-          if (!newLikedBy.contains(userId)) {
-            newLikedBy.add(userId);
-          }
-          return post.copyWith(
-            likedBy: newLikedBy,
-            likeCount: post.likeCount + 1,
-          );
-        }
-        return post;
-      }).toList();
-      
-      state = state.copyWith(posts: updatedPosts);
-    } catch (e) {
-      // Handle error
-    }
-  }
+  // TODO: 좋아요 기능은 추후 구현 예정
+  // Future<void> likePost(String postId, String userId) async {
+  //   // 좋아요 기능 구현 예정
+  // }
 
-  Future<void> unlikePost(String postId, String userId) async {
-    try {
-      await _repository.unlikePost(postId, userId);
-      // Update local state
-      final updatedPosts = state.posts.map((post) {
-        if (post.id == postId) {
-          final newLikedBy = List<String>.from(post.likedBy);
-          newLikedBy.remove(userId);
-          return post.copyWith(
-            likedBy: newLikedBy,
-            likeCount: post.likeCount - 1,
-          );
-        }
-        return post;
-      }).toList();
-      
-      state = state.copyWith(posts: updatedPosts);
-    } catch (e) {
-      // Handle error
-    }
-  }
+  // Future<void> unlikePost(String postId, String userId) async {
+  //   // 좋아요 취소 기능 구현 예정
+  // }
 
-  bool isPostLiked(String postId, String userId) {
-    final post = state.posts.firstWhere((post) => post.id == postId);
-    return post.likedBy.contains(userId);
-  }
+  // bool isPostLiked(String postId, String userId) {
+  //   final post = state.posts.firstWhere((post) => post.id == postId);
+  //   return post.likedBy.contains(userId);
+  // }
 }

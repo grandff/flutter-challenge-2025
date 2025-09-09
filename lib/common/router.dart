@@ -14,6 +14,9 @@ import '../features/threads/profile/views/profile_view.dart';
 import '../features/threads/search/views/search_view.dart';
 import '../features/threads/settings/views/privacy_view.dart';
 import '../features/threads/settings/views/settings_view.dart';
+import '../features/auth/views/login_view.dart';
+import '../features/auth/views/signup_view.dart';
+import 'auth_guard.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -21,10 +24,28 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 final GoRouter router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
+  redirect: (context, state) {
+    // 인증 상태 확인 로직은 Consumer 위젯에서 처리
+    return null;
+  },
   routes: [
+    // 로그인 화면
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (context, state) => const LoginView(),
+    ),
+    // 회원가입 화면
+    GoRoute(
+      path: '/signup',
+      name: 'signup',
+      builder: (context, state) => const SignupView(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return ThreadsShellScaffold(navigationShell: navigationShell);
+        return AuthGuard(
+          child: ThreadsShellScaffold(navigationShell: navigationShell),
+        );
       },
       branches: [
         StatefulShellBranch(

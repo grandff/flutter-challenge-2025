@@ -4,7 +4,11 @@ import 'package:flutter_study/constants/gaps.dart';
 import 'package:flutter_study/constants/sizes.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+// import 'package:cached_network_image/cached_network_image.dart'; // 임시로 비활성화
 import 'dart:io';
+import '../view_model/post_view_model.dart';
+import '../utils/user_utils.dart';
+import '../utils/image_upload_utils.dart';
 
 class CreatePostBottomSheet extends ConsumerStatefulWidget {
   final VoidCallback? onPostCreated;
@@ -23,12 +27,31 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
   final TextEditingController _textController = TextEditingController();
   bool _canPost = false;
   File? _attachedImage;
+  String? _uploadedImageUrl;
   final ImagePicker _picker = ImagePicker();
+  Map<String, dynamic>? _userProfile;
 
   @override
   void initState() {
     super.initState();
     _textController.addListener(_onTextChanged);
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    print('👤 [CreatePostBottomSheet] 사용자 프로필 로드 시작');
+    try {
+      final profile = await UserUtils.getUserProfile();
+      if (mounted) {
+        setState(() {
+          _userProfile = profile;
+        });
+        print(
+            '👤 [CreatePostBottomSheet] 사용자 프로필 로드 완료: ${profile?['name']} (${profile?['email']})');
+      }
+    } catch (e) {
+      print('❌ [CreatePostBottomSheet] 사용자 프로필 로드 실패: $e');
+    }
   }
 
   @override
@@ -299,7 +322,13 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                     style: TextStyle(
                       fontSize: Sizes.size16,
                       fontWeight: FontWeight.w600,
-                      color: _canPost ? Theme.of(context).textTheme.bodyLarge?.color : Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.4),
+                      color: _canPost
+                          ? Theme.of(context).textTheme.bodyLarge?.color
+                          : Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withOpacity(0.4),
                     ),
                   ),
                 ),
@@ -324,25 +353,34 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                           shape: BoxShape.circle,
                           color: Theme.of(context).colorScheme.primaryContainer,
                         ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/face1.jpeg',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
+                        child: _userProfile != null
+                            ? Center(
+                                child: Text(
+                                  UserUtils.getUserAvatarText(),
+                                  style: TextStyle(
+                                    fontSize: Sizes.size18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
+                                ),
+                              )
+                            : Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer,
                                 ),
                                 child: Icon(
-                                  Icons.eco,
-                                  color: Colors.green[600],
+                                  Icons.person,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
                                   size: Sizes.size20,
                                 ),
-                              );
-                            },
-                          ),
-                        ),
+                              ),
                       ),
                       Gaps.h12,
                       // Username and input field
@@ -351,11 +389,15 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'jane_mobbin',
+                              _userProfile?['email'] ??
+                                  UserUtils.getUserEmail(),
                               style: TextStyle(
                                 fontSize: Sizes.size16,
                                 fontWeight: FontWeight.w600,
-                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.color,
                               ),
                             ),
                             Gaps.v8,
@@ -367,7 +409,11 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                                 hintText: 'Start a thread...',
                                 hintStyle: TextStyle(
                                   fontSize: Sizes.size16,
-                                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color
+                                      ?.withOpacity(0.6),
                                 ),
                                 border: InputBorder.none,
                                 counterText: '',
@@ -375,7 +421,10 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                               style: TextStyle(
                                 fontSize: Sizes.size16,
                                 height: 1.4,
-                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.color,
                               ),
                             ),
                           ],
@@ -404,7 +453,7 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                   ),
 
                   // Attached image display
-                  if (_attachedImage != null)
+                  if (_attachedImage != null || _uploadedImageUrl != null)
                     Padding(
                       padding: const EdgeInsets.only(
                         left: Sizes.size60,
@@ -425,24 +474,56 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(Sizes.size12),
-                              child: Image.file(
-                                _attachedImage!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[200],
-                                      borderRadius:
-                                          BorderRadius.circular(Sizes.size12),
+                              child: _uploadedImageUrl != null
+                                  ? Image.network(
+                                      _uploadedImageUrl!,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return Container(
+                                          color: Colors.grey[200],
+                                          child: const Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[200],
+                                            borderRadius: BorderRadius.circular(
+                                                Sizes.size12),
+                                          ),
+                                          child: Icon(
+                                            Icons.image,
+                                            color: Colors.grey[400],
+                                            size: Sizes.size32,
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : Image.file(
+                                      _attachedImage!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[200],
+                                            borderRadius: BorderRadius.circular(
+                                                Sizes.size12),
+                                          ),
+                                          child: Icon(
+                                            Icons.image,
+                                            color: Colors.grey[400],
+                                            size: Sizes.size32,
+                                          ),
+                                        );
+                                      },
                                     ),
-                                    child: Icon(
-                                      Icons.image,
-                                      color: Colors.grey[400],
-                                      size: Sizes.size32,
-                                    ),
-                                  );
-                                },
-                              ),
                             ),
                           ),
                           // Remove button
@@ -453,6 +534,7 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
                               onTap: () {
                                 setState(() {
                                   _attachedImage = null;
+                                  _uploadedImageUrl = null;
                                 });
                               },
                               child: Container(
@@ -522,28 +604,79 @@ class _CreatePostBottomSheetState extends ConsumerState<CreatePostBottomSheet> {
     );
   }
 
-  void _handlePost() {
+  Future<void> _handlePost() async {
     final text = _textController.text.trim();
-    if (text.isNotEmpty) {
-      // TODO: Implement post creation logic
-      print('Creating post: $text');
+    if (text.isEmpty) return;
+
+    print('📝 [CreatePostBottomSheet] 게시글 작성 시작');
+    print(
+        '📝 [CreatePostBottomSheet] 내용: ${text.substring(0, text.length > 50 ? 50 : text.length)}...');
+    if (_attachedImage != null) {
+      print('📝 [CreatePostBottomSheet] 첨부 이미지: ${_attachedImage!.path}');
+    }
+
+    try {
+      // 이미지 업로드
+      String? imageUrl;
       if (_attachedImage != null) {
-        print('With attached image: ${_attachedImage!.path}');
+        print('📸 [CreatePostBottomSheet] 이미지 업로드 시작');
+        imageUrl = await ImageUploadUtils.uploadImage(_attachedImage!);
+        if (imageUrl != null) {
+          print('✅ [CreatePostBottomSheet] 이미지 업로드 성공: $imageUrl');
+          // 업로드된 이미지 URL을 저장하여 UI에서 네트워크 이미지로 표시
+          setState(() {
+            _uploadedImageUrl = imageUrl;
+          });
+        } else {
+          print('❌ [CreatePostBottomSheet] 이미지 업로드 실패');
+        }
       }
 
-      // Close the bottom sheet
-      Navigator.of(context).pop();
+      // 게시글 생성
+      final post = await ref.read(postViewModelProvider.notifier).createPost(
+            content: text,
+            imageUrl: imageUrl,
+          );
 
-      // Call the callback if provided
-      widget.onPostCreated?.call();
+      if (post != null) {
+        print('✅ [CreatePostBottomSheet] 게시글 작성 성공: ${post.id}');
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Post created successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+        // Close the bottom sheet
+        Navigator.of(context).pop();
+
+        // Call the callback if provided
+        widget.onPostCreated?.call();
+
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('게시글이 성공적으로 작성되었습니다!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        print('❌ [CreatePostBottomSheet] 게시글 작성 실패');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('게시글 작성에 실패했습니다. 다시 시도해주세요.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('❌ [CreatePostBottomSheet] 게시글 작성 중 오류: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('오류가 발생했습니다: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }
