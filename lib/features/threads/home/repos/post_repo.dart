@@ -152,4 +152,54 @@ class PostRepo {
       rethrow;
     }
   }
+
+  // 게시글 검색
+  Future<List<PostModel>> searchPosts(String query) async {
+    print('🔍 [PostRepo] 게시글 검색 시작 - Query: $query');
+
+    try {
+      final response = await _client
+          .from('posts')
+          .select('*')
+          .ilike('content', '%$query%')
+          .order('created_at', ascending: false);
+
+      print('🔍 [PostRepo] 게시글 검색 성공: ${response.length}개');
+
+      // 각 게시글에 대해 사용자 정보를 별도로 조회
+      final postsWithUserInfo = <PostModel>[];
+
+      for (final postData in response) {
+        try {
+          // 사용자 정보 조회
+          final userResponse = await _client
+              .from('members')
+              .select('email, name')
+              .eq('id', postData['user_id'])
+              .single();
+
+          print('👤 [PostRepo] 검색 결과 사용자 정보: ${userResponse['email']}');
+
+          // 사용자 정보를 postData에 추가
+          postData['username'] = userResponse['email'] ?? '';
+          postData['user_profile_image'] = '';
+          postData['is_verified'] = false;
+
+          postsWithUserInfo.add(PostModel.fromJson(json: postData));
+        } catch (userError) {
+          print('❌ [PostRepo] 검색 결과 사용자 정보 조회 실패: $userError');
+          // 사용자 정보가 없어도 게시글은 표시
+          postData['username'] = 'Unknown User';
+          postData['user_profile_image'] = '';
+          postData['is_verified'] = false;
+          postsWithUserInfo.add(PostModel.fromJson(json: postData));
+        }
+      }
+
+      return postsWithUserInfo;
+    } catch (e) {
+      print('❌ [PostRepo] 게시글 검색 실패: $e');
+      rethrow;
+    }
+  }
 }

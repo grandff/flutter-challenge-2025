@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_study/constants/sizes.dart';
 import '../view_model/search_view_model.dart';
 import '../widgets/user_profile_widget.dart';
+import '../../home/widgets/post_widget.dart';
+import '../../home/utils/user_utils.dart';
 
 class SearchView extends ConsumerStatefulWidget {
   const SearchView({super.key});
@@ -17,10 +19,10 @@ class _SearchViewState extends ConsumerState<SearchView> {
   @override
   void initState() {
     super.initState();
-    // Load trending users when view is initialized
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(searchViewModelProvider.notifier).loadTrendingUsers();
-    });
+    // 최초 화면에서는 검색어 입력 안내만 표시
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   ref.read(searchViewModelProvider.notifier).loadTrendingUsers();
+    // });
   }
 
   @override
@@ -66,7 +68,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
-                            hintText: 'Search',
+                            hintText: 'Search posts...',
                             prefixIcon: Icon(
                               Icons.search,
                               color: Theme.of(context)
@@ -128,7 +130,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                 ],
               ),
             ),
-            // Search results or trending users
+            // Search results
             Expanded(
               child: searchState.isLoading
                   ? const Center(
@@ -172,7 +174,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                             ],
                           ),
                         )
-                      : searchState.users.isEmpty
+                      : searchState.query.isEmpty
                           ? Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -184,33 +186,88 @@ class _SearchViewState extends ConsumerState<SearchView> {
                                   ),
                                   const SizedBox(height: Sizes.size16),
                                   Text(
-                                    'Search for posts, people, or topics',
+                                    '검색어를 입력해주세요',
                                     style: TextStyle(
                                       color: Colors.grey[600],
                                       fontSize: 18,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
+                                  const SizedBox(height: Sizes.size8),
+                                  Text(
+                                    '게시글 내용을 검색할 수 있습니다',
+                                    style: TextStyle(
+                                      color: Colors.grey[500],
+                                      fontSize: 14,
+                                    ),
+                                  ),
                                 ],
                               ),
                             )
-                          : ListView.builder(
-                              itemCount: searchState.users.length,
-                              itemBuilder: (context, index) {
-                                final user = searchState.users[index];
-                                return Column(
-                                  children: [
-                                    UserProfileWidget(user: user),
-                                    if (index < searchState.users.length - 1)
-                                      Divider(
-                                        height: 1,
-                                        color: Colors.grey[200],
-                                        indent: Sizes.size60,
+                          : searchState.posts.isEmpty &&
+                                  searchState.users.isEmpty
+                              ? Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.search_off,
+                                        color: Colors.grey[400],
+                                        size: 64,
                                       ),
-                                  ],
-                                );
-                              },
-                            ),
+                                      const SizedBox(height: Sizes.size16),
+                                      Text(
+                                        '검색 결과가 없습니다',
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: Sizes.size8),
+                                      Text(
+                                        '"${searchState.query}"에 대한 결과를 찾을 수 없습니다',
+                                        style: TextStyle(
+                                          color: Colors.grey[500],
+                                          fontSize: 14,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : searchState.posts.isNotEmpty
+                                  ? ListView.builder(
+                                      itemCount: searchState.posts.length,
+                                      itemBuilder: (context, index) {
+                                        final post = searchState.posts[index];
+                                        final currentUserId =
+                                            UserUtils.getCurrentUser()?.id ??
+                                                '';
+                                        return PostWidget(
+                                          post: post,
+                                          currentUserId: currentUserId,
+                                        );
+                                      },
+                                    )
+                                  : ListView.builder(
+                                      itemCount: searchState.users.length,
+                                      itemBuilder: (context, index) {
+                                        final user = searchState.users[index];
+                                        return Column(
+                                          children: [
+                                            UserProfileWidget(user: user),
+                                            if (index <
+                                                searchState.users.length - 1)
+                                              Divider(
+                                                height: 1,
+                                                color: Colors.grey[200],
+                                                indent: Sizes.size60,
+                                              ),
+                                          ],
+                                        );
+                                      },
+                                    ),
             ),
           ],
         ),
