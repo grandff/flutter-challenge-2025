@@ -14,8 +14,12 @@ import '../features/threads/profile/views/profile_view.dart';
 import '../features/threads/search/views/search_view.dart';
 import '../features/threads/settings/views/privacy_view.dart';
 import '../features/threads/settings/views/settings_view.dart';
-import '../features/auth/views/login_view.dart';
-import '../features/auth/views/signup_view.dart';
+import '../features/auth/views/login_view.dart' as threads_auth;
+import '../features/auth/views/signup_view.dart' as threads_auth;
+import '../features/mood/auth/views/login_view.dart' as mood_auth;
+import '../features/mood/auth/views/signup_view.dart' as mood_auth;
+import '../features/mood/mood/views/mood_home_view.dart';
+import '../features/mood/auth/repos/auth_repo.dart';
 import 'auth_guard.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -23,23 +27,72 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 
 final GoRouter router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/',
+  initialLocation: '/mood/login',
   redirect: (context, state) {
-    // 인증 상태 확인 로직은 Consumer 위젯에서 처리
-    return null;
+    // 현재 경로가 mood 관련인지 확인
+    final currentPath = state.uri.path;
+    final isMoodRoute = currentPath.startsWith('/mood');
+
+    if (isMoodRoute) {
+      // mood 앱의 인증 상태 확인
+      final currentUser = AuthRepo.getCurrentUser();
+
+      // 로그인된 사용자이고 로그인/회원가입 페이지에 있다면 홈으로 리다이렉트
+      if (currentUser != null && currentUser.isAuthenticated) {
+        if (currentPath == '/mood/login' || currentPath == '/mood/signup') {
+          return '/mood/home';
+        }
+      }
+      // 로그인되지 않은 사용자이고 홈 페이지에 있다면 로그인으로 리다이렉트
+      else if (currentUser == null || !currentUser.isAuthenticated) {
+        if (currentPath == '/mood/home' || currentPath == '/mood/posts') {
+          return '/mood/login';
+        }
+      }
+    }
+
+    return null; // 리다이렉트하지 않음
   },
   routes: [
-    // 로그인 화면
+    // 무드트래커 로그인 화면
+    GoRoute(
+      path: '/mood/login',
+      name: 'mood_login',
+      builder: (context, state) => const mood_auth.LoginView(),
+    ),
+    // 무드트래커 회원가입 화면
+    GoRoute(
+      path: '/mood/signup',
+      name: 'mood_signup',
+      builder: (context, state) => const mood_auth.SignUpView(),
+    ),
+    // 무드트래커 홈 화면
+    GoRoute(
+      path: '/mood/home',
+      name: 'mood_home',
+      builder: (context, state) => const MoodHomeView(),
+    ),
+    // 무드트래커 게시물 화면 (임시)
+    GoRoute(
+      path: '/mood/posts',
+      name: 'mood_posts',
+      builder: (context, state) => const Scaffold(
+        body: Center(
+          child: Text('게시물 화면 (구현 예정)'),
+        ),
+      ),
+    ),
+    // 기존 Threads 로그인 화면
     GoRoute(
       path: '/login',
       name: 'login',
-      builder: (context, state) => const LoginView(),
+      builder: (context, state) => const threads_auth.LoginView(),
     ),
-    // 회원가입 화면
+    // 기존 Threads 회원가입 화면
     GoRoute(
       path: '/signup',
       name: 'signup',
-      builder: (context, state) => const SignupView(),
+      builder: (context, state) => const threads_auth.SignupView(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

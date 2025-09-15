@@ -244,6 +244,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
               ),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                router.go('/mood/login');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF9A8D4),
+                foregroundColor: Colors.black,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              ),
+              child: Text(
+                '🔥 MOOD 로그인으로 이동',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
           ],
         ),
       ),
