@@ -20,6 +20,7 @@ import '../features/mood/auth/views/login_view.dart' as mood_auth;
 import '../features/mood/auth/views/signup_view.dart' as mood_auth;
 import '../features/mood/mood/views/mood_home_view.dart';
 import '../features/mood/auth/repos/auth_repo.dart';
+import '../features/animation/implicit/views/implicit_animation_view.dart';
 import 'auth_guard.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -27,7 +28,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 
 final GoRouter router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/mood/login',
+  initialLocation: '/animation',
   redirect: (context, state) {
     // 현재 경로가 mood 관련인지 확인
     final currentPath = state.uri.path;
@@ -54,6 +55,12 @@ final GoRouter router = GoRouter(
     return null; // 리다이렉트하지 않음
   },
   routes: [
+    // 애니메이션 데모 화면
+    GoRoute(
+      path: '/animation',
+      name: 'animation',
+      builder: (context, state) => const ImplicitAnimationView(),
+    ),
     // 무드트래커 로그인 화면
     GoRoute(
       path: '/mood/login',
