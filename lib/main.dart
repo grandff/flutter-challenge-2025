@@ -6,7 +6,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'common/theme_provider.dart';
 import 'common/router.dart';
 import 'core/supabase_client.dart';
-import 'features/animation/implicit/views/implicit_animation_view.dart';
+import 'features/animation/explicit/views/explicit_animation_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +67,6 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ImplicitAnimationView();
+    return const ExplicitAnimationView();
   }
 }
