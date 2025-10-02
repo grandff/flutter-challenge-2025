@@ -20,7 +20,9 @@ import '../features/mood/auth/views/login_view.dart' as mood_auth;
 import '../features/mood/auth/views/signup_view.dart' as mood_auth;
 import '../features/mood/mood/views/mood_home_view.dart';
 import '../features/mood/auth/repos/auth_repo.dart';
-import '../features/animation/explicit/views/explicit_animation_view.dart';
+import '../features/pomodoroV2/views/pomodoro_v2_view.dart';
+import '../features/flashcard/views/flashcard_view.dart';
+import '../features/movieflix/views/movie_intro_view.dart';
 import 'auth_guard.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -28,7 +30,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 
 final GoRouter router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/animation',
+  initialLocation: '/movieflix',
   redirect: (context, state) {
     // 현재 경로가 mood 관련인지 확인
     final currentPath = state.uri.path;
@@ -55,11 +57,23 @@ final GoRouter router = GoRouter(
     return null; // 리다이렉트하지 않음
   },
   routes: [
+    // 플래시 카드 화면
+    GoRoute(
+      path: '/flashcard',
+      name: 'flashcard',
+      builder: (context, state) => const FlashcardView(),
+    ),
+    // 영화 소개 화면
+    GoRoute(
+      path: '/movieflix',
+      name: 'movieflix',
+      builder: (context, state) => const MovieIntroView(),
+    ),
     // 애니메이션 데모 화면
     GoRoute(
       path: '/animation',
       name: 'animation',
-      builder: (context, state) => const ExplicitAnimationView(),
+      builder: (context, state) => const PomodoroV2View(),
     ),
     // 무드트래커 로그인 화면
     GoRoute(
